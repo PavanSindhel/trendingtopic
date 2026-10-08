@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="mesh" cx="78%" cy="24%" r="65%"><stop stop-color="#50e3c2" stop-opacity=".24"/><stop offset=".42" stop-color="#007cf0" stop-opacity=".13"/><stop offset=".75" stop-color="#7928ca" stop-opacity=".07"/><stop offset="1" stop-color="#fafafa" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#fafafa"/><rect width="1200" height="630" fill="url(#mesh)"/>
+  <path d="M84 92h8v9h-8zM97 84h8v17h-8zM110 74h8v27h-8z" fill="#171717"/>
+  <text x="132" y="101" fill="#171717" font-family="Arial,sans-serif" font-size="25" font-weight="600" letter-spacing="-1">trending<tspan fill="#777" font-weight="400">news</tspan></text>
+  <text x="84" y="210" fill="#777" font-family="monospace" font-size="14" letter-spacing="1">TRENDING NOW · INDIA</text>
+  <text x="78" y="337" fill="#171717" font-family="Arial,sans-serif" font-size="106" font-weight="700" letter-spacing="-7">WHAT'S</text>
+  <text x="78" y="445" fill="#171717" font-family="Arial,sans-serif" font-size="106" font-weight="700" letter-spacing="-7">TRENDING?</text>
+  <text x="85" y="520" fill="#666" font-family="Arial,sans-serif" font-size="22">Don't just follow the news. Follow the conversation.</text>
+  <text x="1090" y="550" fill="#888" font-family="monospace" font-size="12" text-anchor="end">trendingtopic</text>
+</svg>

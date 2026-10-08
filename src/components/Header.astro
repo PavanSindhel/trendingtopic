@@ -1,0 +1,25 @@
+---
+import { periods } from '../data/trends';
+const path = Astro.url.pathname;
+const nav = [{label:'Home',href:'/'}, ...periods.filter((p) => ['Today','Yesterday','This week','This month','This year'].includes(p.label)).map((p) => ({label:p.label,href:p.href}))];
+---
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Trending Topic home"><img class="brand-mark" src="/favicon.svg" alt="" aria-hidden="true" /><span>trending<span class="brand-light">topic</span></span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {nav.map((item) => <a href={item.href} class:list={{active:path === item.href}} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <form class="search-form" action="/search" method="get" data-search-form role="search">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.4"></circle><path d="m16 16 4.2 4.2"></path></svg>
+        <label class="sr-only" for="header-search">Search topics</label><input id="header-search" name="q" type="search" placeholder="Search topics" />
+        <kbd>⌘ K</kbd>
+      </form>
+      <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" data-menu-toggle><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="mobile-nav" aria-label="Mobile navigation" data-mobile-menu hidden>
+    {nav.map((item) => <a href={item.href} class:list={{active:path === item.href}}>{item.label}<span aria-hidden="true">↗</span></a>)}
+    <form class="mobile-search" action="/search" method="get"><label class="sr-only" for="mobile-search">Search topics</label><input id="mobile-search" name="q" type="search" placeholder="Search all topics" /><button aria-label="Submit search">↗</button></form>
+  </nav>
+</header>

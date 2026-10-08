@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Page not found | Trending Topic" description="The page you’re looking for could not be found." canonical="https://trendingnews.vercel.app/404">
+  <main id="main" class="error-page shell">
+    <span class="error-code">404 <span>·</span> PAGE NOT FOUND</span>
+    <h1>This page<br />is off the radar.</h1>
+    <p>The link may be outdated, or the page may have moved. Head back to the latest topics and start again.</p>
+    <a class="button-primary" href="/">Back to trending topics <span aria-hidden="true">→</span></a>
+  </main>
+</Layout>
+
+<style>
+  .error-page{min-height:65vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding-top:70px;padding-bottom:90px}
+  .error-code{font:11px var(--mono);letter-spacing:.04em;color:#777}
+  .error-code span{padding:0 6px;color:#bbb}
+  .error-page h1{font-size:clamp(54px,9vw,108px);line-height:.9;letter-spacing:-.085em;margin:22px 0 18px}
+  .error-page p{max-width:440px;font-size:15px;color:#666;margin:0 0 25px}
+  .error-page .button-primary{gap:12px}
+  @media(max-width:560px){.error-page{min-height:58vh;padding-top:48px;padding-bottom:65px}.error-page p{font-size:14px}}
+</style>

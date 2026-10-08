@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+const { title, description, canonical } = Astro.props;
+---
+<Layout title={`${title} | Trending Topic`} description={description} canonical={canonical}>
+  <main id="main" class="info-page shell">
+    <a class="info-back" href="/">← Back to home</a>
+    <header class="info-heading"><span class="eyebrow">Trending Topic</span><h1>{title}</h1><p>{description}</p></header>
+    <article class="info-content"><slot /></article>
+  </main>
+</Layout>
+
+<style>
+  .info-page{max-width:900px;padding-top:58px;padding-bottom:90px;min-height:65vh}
+  .info-back{display:inline-block;color:#777;font-size:12px;margin-bottom:35px}
+  .info-back:hover,.info-content a:hover{color:#0761d1}
+  .info-heading{padding-bottom:28px;border-bottom:1px solid var(--hair)}
+  .info-heading h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.075em;margin:16px 0}
+  .info-heading>p{max-width:620px;color:#666;font-size:16px;margin:0}
+  .info-content{max-width:720px;padding-top:20px;color:#444;font-size:15px;line-height:1.75}
+  .info-content h2{color:var(--ink);font-size:21px;letter-spacing:-.035em;margin:34px 0 8px}
+  .info-content p{margin:10px 0 16px}
+  .info-content ul{padding-left:22px}
+  .info-content li{padding:3px 0}
+  .info-content a{text-decoration:underline;text-underline-offset:3px}
+  @media(max-width:560px){.info-page{padding-top:38px;padding-bottom:60px}.info-back{margin-bottom:26px}.info-heading>p{font-size:14px}.info-content{font-size:14px}}
+</style>

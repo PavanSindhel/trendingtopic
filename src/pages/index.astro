@@ -1,11 +1,81 @@
----
-import Welcome from '../components/Welcome.astro';
+﻿---
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import TrendingTopics from '../components/TrendingTopics.astro';
+import TrendIndicator from '../components/TrendIndicator.astro';
+import NewsCard from '../components/NewsCard.astro';
+import { trends, periods, topicsForPeriod } from '../data/trends';
+import { news } from '../data/news';
+import { trendFontSize } from '../utils/trendScore';
+const leader = trends[0];
+const featuredNews = news.slice(0,3);
+const structuredData = { '@context':'https://schema.org', '@type':'WebSite', name:'Trending Topic', url:'https://trendingnews.vercel.app/', description:'Explore trending topics today in India and discover stories behind current conversations.', potentialAction:{ '@type':'SearchAction', target:'https://trendingnews.vercel.app/search?q={search_term_string}', 'query-input':'required name=search_term_string' } };
+const faqs = [
+  { question:'What are trending topics?', answer:'Trending topics are subjects attracting notable attention in a particular timeframe. Trending Topic organizes them by trend score and category, with momentum indicators and topic pages to help you explore what is gaining attention.' },
+  { question:'How can I find trending topics today?', answer:'Start with the homepage topic overview to scan the current India-focused trends. You can open a topic for its score, momentum, history, and related stories, or use search if you already have a subject in mind.' },
+  { question:'What’s trending in India today?', answer:'The homepage presents an India-focused snapshot of trending topics across categories such as technology, sports, business, culture, society, and science. Open the topics listed there to see their details and related coverage.' },
+  { question:'How often are trending topics updated?', answer:'The site presents trend signals as a current snapshot and labels them as refreshed continuously. The displayed update time can vary by topic; check the topic page for its update information.' },
+  { question:'How do you decide which topics are trending?', answer:'Topics are organized using trend scores and momentum indicators. These help show relative prominence and whether attention is rising or falling in the selected view; they are useful signals, not a substitute for reading the underlying reporting.' },
+  { question:'Where can I find trending news today?', answer:'Browse the stories section on the homepage for coverage connected to trending topics. You can also open a topic page and follow its related story links for more context.' },
+  { question:'What’s the difference between trending topics and trending news?', answer:'A trending topic is a subject drawing attention, while trending news is reporting about that subject. Topic pages help you explore the broader conversation; linked stories provide article-level details and context.' },
+  { question:'Can I explore trending topics by time period?', answer:'Yes. Use the period links to browse views for today, yesterday, the day before yesterday, this week, this month, and this year. Comparing periods can help distinguish a recent spike from a longer-running conversation.' },
+  { question:'How can I find stories about a trending topic?', answer:'Select a topic from the homepage or search results to open its topic page. From there, follow the related coverage links to read stories about the subject.' },
+  { question:'Why do trending topics change so quickly?', answer:'Attention can shift when new events, announcements, results, or public conversations emerge. A topic’s momentum may rise or fall as interest changes, so compare time periods for a wider view.' },
+  { question:'Are trending topics the same across every country?', answer:'No. What attracts attention can differ by location, language, and local events. Trending Topic’s homepage is focused on India, so its snapshot may differ from trends elsewhere.' },
+  { question:'How can I keep up with the latest trending topics?', answer:'Visit the homepage to scan the current snapshot, revisit the period views to see how attention changes, and use search or topic links to follow subjects and their related stories.' },
+];
+const faqStructuredData = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(({ question, answer }) => ({ '@type':'Question', name:question, acceptedAnswer:{ '@type':'Answer', text:answer } })) };
 ---
+<Layout title="Trending Topics Today in India | Trending Topic" description="Explore trending topics today in India, compare topic momentum over time, and discover the stories behind current conversations." canonical="https://trendingnews.vercel.app/">
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
+  <main id="main">
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-topline"><span class="eyebrow live">Trending now Â· India</span><span class="updated"><span></span>Updated just now</span></div>
+      <div class="hero-main"><div><h1 id="hero-title"><span>Trending</span><span>topics</span></h1><p class="hero-subtitle">Explore trending topics today, see what is gaining momentum in India, and follow the stories moving through the conversation.</p><div class="hero-actions"><a class="button-primary" href={`/topic/${leader.slug}`}>Explore the story <span aria-hidden="true">â†—</span></a><a class="button-secondary" href="#topics">See all trends <span aria-hidden="true">â†“</span></a></div></div>
+        <div class="hero-stat" aria-label="Artificial Intelligence trend statistics"><div><span class="stat-label">Trending</span><span class="stat-value">#01 <TrendIndicator change={leader.change} /></span></div><div><span class="stat-label">Trend score</span><span class="stat-value">{leader.score}<span style="color:#aaa"> / 100</span></span></div><div><span class="stat-label">Category</span><span class="stat-value">{leader.category}</span></div></div>
+      </div>
+    </section>
+    <section class="topic-section shell" id="topics" aria-labelledby="topic-title">
+      <div class="section-head"><div><span class="eyebrow">The live picture</span><h2 id="topic-title" style="margin-top:10px">The conversation, at a glance.</h2><p>Topic size reflects its current trend score.</p></div><a class="section-link" href="/today">Explore today <span aria-hidden="true">â†—</span></a></div>
+      <TrendingTopics topics={trends} />
+      <div class="topic-section-meta"><span><strong>20 topics</strong> Â· across 6 categories</span><span>Signals refreshed continuously</span></div>
+    </section>
+    <section class="period-section shell" aria-labelledby="period-title">
+      <div class="section-head"><div><span class="eyebrow">Perspective over time</span><h2 id="period-title" style="margin-top:10px">Follow the signal.</h2><p>Some conversations burn bright. Others build over time.</p></div></div>
+      <div class="period-list">{periods.map((period) => { const topics = topicsForPeriod(period.scoreFactor).slice(0,5); return <div class="period-row"><div class="period-intro"><h3><a href={period.href}>{period.label} <span aria-hidden="true">â†—</span></a></h3><p>{period.note}</p></div><div class="period-preview">{topics.map((topic) => <a href={`/topic/${topic.slug}`} style={`--topic-size:${trendFontSize(topic.score)}`}>{topic.name}</a>)}</div><a class="period-more" href={period.href} aria-label={`Explore trends for ${period.label}`}>View â†’</a></div>})}</div>
+    </section>
+    <section class="shell" aria-labelledby="news-title" style="padding-bottom:74px"><div class="section-head"><div><span class="eyebrow">Stories behind the spike</span><h2 id="news-title" style="margin-top:10px">Whatâ€™s driving the conversation.</h2></div><a class="section-link" href="/today">All stories â†—</a></div><div class="news-grid">{featuredNews.map((item) => <NewsCard item={item} />)}</div></section>
+    <section class="seo-guide shell" aria-labelledby="seo-guide-title">
+      <div class="seo-guide-inner">
+        <span class="eyebrow">A clearer view of the conversation</span>
+        <h2 id="seo-guide-title">Your guide to trending topics</h2>
+        <p class="seo-guide-lede">Trending Topic helps you make sense of the subjects attracting attention. Browse a visual snapshot of trending topics today, compare how interest changes over time, and open related coverage when you want more context. Topic rankings, momentum indicators, categories, and trending stories come together to help you move from a quick scan to a deeper read.</p>
 
-<Layout>
-	<Welcome />
+        <h3>See what is gaining attention today</h3>
+        <p>When you want to know what is trending, start with the topic field on the homepage. It gives popular topics today a clear visual order: larger topic labels represent stronger trend scores in the current view, while each topic page adds its category, score, momentum, and a short explanation. This makes the first glance useful without asking you to interpret a stream of disconnected headlines. Scan the names, notice which subjects stand out, and open the ones that matter to you.</p>
+        <p>The homepage is an overview, and one subject cannot tell the whole story. A high ranking shows relative prominence in the snapshot presented here; it is a starting point for exploration. Trend indicators add another useful signal by showing whether a topic is rising, falling, or holding steady. Together, position, score, and direction help distinguish a subject that is prominent now from one whose attention is changing. You can use these signals to decide what to explore next, while keeping the score in perspective.</p>
+
+        <h3>Put today’s trending topics in context</h3>
+        <p>Not every conversation follows the same clock. Some subjects draw attention quickly and fade, while others build over days or weeks. The time-based views let you compare trending topics today with topics across yesterday, this week, this month, and this year. Each view reshapes the list for its selected period, making it easier to explore the difference between a short-lived spike and a longer-running conversation. Use the period links to change your perspective without losing the simple, scan-friendly format.</p>
+        <p>This time context is especially helpful when following current events today. A headline may explain what happened, but a trend view can help you see whether public attention around its subject is new, persistent, or cooling. The score and direction are useful orientation signals, not a substitute for reading an article or checking the details of a developing story. Follow the topic links to get more background before drawing conclusions, and compare the selected timeframe with a broader view when you need more perspective.</p>
+
+        <h3>Explore trending topics in India and across categories</h3>
+        <p>Trending Topic gives particular attention to trending topics in India, while covering subjects across multiple categories so the homepage is not limited to one kind of conversation. Technology, business, sport, entertainment, and other areas can appear side by side. That broader mix helps you notice connections between different parts of the news and discover topics you might not have searched for directly. Category labels on topic pages make it easier to understand where a conversation fits and to move between related interests.</p>
+        <p>People often search for trending news today, latest trending topics, or social media trends because they want a fast answer to a simple question: what are people talking about right now? This site is built to make that first step easier. It organizes topics into a readable snapshot and connects them to related coverage, rather than presenting a bare list of keywords. The view gives you a starting point for discovery; linked stories provide reporting and detail that a ranking alone cannot offer. Explore several subjects to get a fuller picture of the day.</p>
+
+        <h3>Go from a popular topic to the stories behind it</h3>
+        <p>A topic page is where a name in the ranking becomes a subject you can investigate. Open a topic to review its description, historical trend pattern, score, and related subjects. These details add context to the homepage snapshot and help explain why a topic may be moving. Related links also make it easy to continue exploring when one subject overlaps with another. If you are researching a developing issue, compare its recent movement with the longer history and read the coverage linked from the page.</p>
+        <p>The stories section connects trending topics with trending stories, giving you a path from an emerging signal to an article. Story cards show the source and headline, so you can choose what to read instead of relying on a score as the whole explanation. This is useful for a quick morning scan, for checking a topic you have heard mentioned, or for finding a wider range of subjects beyond your usual news habits. Follow the source links and article details for the full account, then return to the topic view to explore related conversations.</p>
+
+        <h3>Search the conversation at your own pace</h3>
+        <p>If you already have a subject in mind, use search to find it across the available topics. Search matches topic names, categories, and descriptions, helping you find a relevant page even when you do not know its exact label. You can also browse through the time views and related-topic links when exploring without a specific query. Whether you arrive asking “what’s trending” or looking for one particular subject, the same tools support both a quick overview and a more focused journey.</p>
+        <p>Use Trending Topic as a guide to attention: see the latest trending topics in the snapshot, compare their movement, and follow the stories that interest you. Rankings make the landscape easier to scan; topic pages, history, categories, search, and article links add the next layer of context. Together, these features help you keep up with popular topics today and understand how conversations change over time. Start with a broad view, choose a subject that catches your eye, and follow the evidence and reporting wherever it leads.</p>
+      </div>
+    </section>
+    <section class="faq-section shell" aria-labelledby="faq-title">
+      <script type="application/ld+json" set:html={JSON.stringify(faqStructuredData)}></script>
+      <div class="section-head"><div><span class="eyebrow">Quick answers</span><h2 id="faq-title" style="margin-top:10px">Trending topics FAQs</h2><p>Learn how to explore current trends, time periods, and related news.</p></div></div>
+      <div class="faq-list">{faqs.map(({ question, answer }) => <details class="faq-item"><summary>{question}</summary><p>{answer}</p></details>)}</div>
+    </section>
+    <section class="manifesto shell"><span class="eyebrow">Why Trending Topic</span><blockquote>Donâ€™t just show me the news.<br /><span>Show me what people are talking about.</span></blockquote></section>
+  </main>
 </Layout>

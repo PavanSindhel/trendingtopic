@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { news } from '../../data/news';
+import { trends } from '../../data/trends';
+export function getStaticPaths() { return news.map((item) => ({ params:{slug:item.slug}, props:{item} })); }
+const { item } = Astro.props;
+const relatedTopics = trends.filter((topic) => item.topicSlugs.includes(topic.slug));
+const relatedNews = news.filter((other) => other.slug !== item.slug && other.topicSlugs.some((slug) => item.topicSlugs.includes(slug))).slice(0,3);
+const publishedAt = new Date(`${item.published.split(' · ')[0]} ${item.published.split(' · ')[1].replace(' IST','')} +05:30`).toISOString();
+const updatedAt = new Date(`${item.updated.split(' · ')[0]} ${item.updated.split(' · ')[1].replace(' IST','')} +05:30`).toISOString();
+const schema = { '@context':'https://schema.org', '@type':'NewsArticle', headline:item.headline, description:item.subtitle, image:[item.image], datePublished:publishedAt, dateModified:updatedAt, author:{'@type':'Organization',name:item.source}, publisher:{'@type':'Organization',name:'Trending Topic'} };
+---
+<Layout title={`${item.headline} | Trending Topic`} description={item.subtitle} canonical={`https://trendingnews.vercel.app/news/${item.slug}`} image={item.image}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+  <main id="main" class="news-page shell"><div class="article-layout"><article class="article-content"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/today">Stories</a><span aria-hidden="true">/</span><span>Article</span></nav><div class="article-category">The daily signal · {item.source}</div><h1>{item.headline}</h1><p class="article-subtitle">{item.subtitle}</p><div class="article-byline"><span>{item.source}</span><i class="byline-dot"></i><time datetime={publishedAt}>{item.published}</time><i class="byline-dot"></i><span>Updated <time datetime={updatedAt}>{item.updated.split(' · ')[1]}</time></span></div><img class="article-hero" src={item.image} alt="Editorial image related to the story" fetchpriority="high" /><p class="article-summary">{item.summary}</p><div class="article-body">{item.body.map((paragraph)=><p>{paragraph}</p>)}</div></article>
+    <aside class="article-aside"><section><h2>In this story</h2>{relatedTopics.map((topic)=><a class="side-topic" href={`/topic/${topic.slug}`}>{topic.name} <span style="color:#999">↗</span></a>)}</section><section><h2>Reading the moment</h2><p class="why-copy" style="font-size:12px">Our trend score reflects relative attention and recent momentum. It’s a snapshot of the conversation, not a measure of importance.</p></section></aside></div>
+    {relatedNews.length > 0 && <section class="article-related"><h2>Keep exploring</h2><div class="news-grid">{relatedNews.map((newsItem)=><NewsCard item={newsItem} />)}</div></section>}
+  </main>
+</Layout>

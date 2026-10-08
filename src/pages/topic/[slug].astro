@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TrendHistory from '../../components/TrendHistory.astro';
+import TrendIndicator from '../../components/TrendIndicator.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { trends } from '../../data/trends';
+import { newsForTopic } from '../../data/news';
+export function getStaticPaths() { return trends.map((topic) => ({ params:{slug:topic.slug}, props:{topic} })); }
+const { topic } = Astro.props;
+const related = trends.filter((item) => item.slug !== topic.slug && (item.category === topic.category || (topic.slug.startsWith('ai-') && item.slug.startsWith('ai-')))).slice(0,4);
+const articles = newsForTopic(topic.slug);
+const title = `${topic.name} trends — score ${topic.score} | Trending Topic`;
+const schema = { '@context':'https://schema.org', '@type':'Thing', name:topic.name, description:topic.description, url:`https://trendingnews.vercel.app/topic/${topic.slug}` };
+---
+<Layout title={title} description={topic.description} canonical={`https://trendingnews.vercel.app/topic/${topic.slug}`}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+  <main id="main" class="topic-page shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/today">Trending</a><span aria-hidden="true">/</span><span>{topic.name}</span></nav>
+    <section class="topic-overview"><div><span class="eyebrow">{topic.category} · Topic #{String(topic.rank).padStart(2,'0')}</span><h1>{topic.name}</h1><p>{topic.description}</p></div><div class="topic-numbers"><div><strong>{topic.score}<span style="color:#aaa;font-size:12px"> / 100</span></strong><span>Trend score</span></div><div><strong><TrendIndicator change={topic.change} /></strong><span>Since yesterday</span></div><div><strong>#{String(topic.rank).padStart(2,'0')}</strong><span>Today’s rank</span></div></div></section>
+    <div class="topic-body"><section class="article-copy"><h2>Why it’s trending</h2><p class="why-copy">{topic.why}</p><h2>Trend history</h2><p class="why-copy" style="margin-bottom:18px">A quick look at how attention has shifted across recent periods.</p><TrendHistory history={topic.history} /><div class="topic-related"><h2>Related topics</h2><div class="related-links">{related.map((item)=><a href={`/topic/${item.slug}`}>{item.name}<span style="color:#888"> ↗</span></a>)}</div></div></section>
+      <aside class="topic-sidebar"><div class="side-note"><strong>Updated</strong>{topic.updatedAt}<br />Signals refresh throughout the day.</div><div class="side-note"><strong>How this score works</strong>Trend score combines relative attention and recent momentum into a simple 0–100 snapshot.</div></aside></div>
+    <section class="related-news"><div class="section-head"><div><span class="eyebrow">More context</span><h2 style="margin-top:10px">Latest updates</h2></div></div>{articles.length ? <div class="news-grid">{articles.map((item)=><NewsCard item={item} />)}</div> : <p class="why-copy">We’re tracking this topic. New stories will appear here as the conversation develops.</p>}</section>
+  </main>
+</Layout>

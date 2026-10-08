@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TrendingTopics from '../components/TrendingTopics.astro';
+import NewsCard from '../components/NewsCard.astro';
+import { periods, topicsForPeriod } from '../data/trends';
+import { news } from '../data/news';
+export function getStaticPaths() { return periods.map((period) => ({ params:{period:period.href.slice(1)}, props:{period} })); }
+const { period } = Astro.props;
+const topics = topicsForPeriod(period.scoreFactor);
+const heading = period.label === 'This week' ? 'This week' : period.label === 'This month' ? 'This month' : period.label === 'This year' ? 'This year' : period.label;
+---
+<Layout title={`${heading} — Trending Topic`} description={`${period.note} Explore topic scores and the stories shaping ${heading.toLowerCase()}.`} canonical={`https://trendingnews.vercel.app${period.href}`}>
+  <main id="main" class="period-page shell"><div class="eyebrow">Trend archive · India</div><h1 class="period-title">{heading}<span style="color:#999">.</span></h1><p class="period-description">{period.note} Topic size reflects relative attention during this period.</p><TrendingTopics topics={topics} /><div class="topic-section-meta"><span><strong>{topics.length} topics</strong> · sorted by trend score</span><span>Period snapshot · Updated today</span></div><section class="period-news"><h2>Stories people followed</h2><div class="news-grid">{news.slice(0,3).map((item)=><NewsCard item={item} />)}</div></section></main>
+</Layout>

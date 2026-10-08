@@ -1,0 +1,8 @@
+---
+const { change = 0 } = Astro.props;
+const positive = Number(change) > 0;
+const negative = Number(change) < 0;
+const symbol = positive ? '↑' : negative ? '↓' : '→';
+const label = positive ? `Up ${change}%` : negative ? `Down ${Math.abs(Number(change))}%` : 'No change';
+---
+<span class:list={['trend-indicator', positive && 'rising', negative && 'falling', !positive && !negative && 'stable']} aria-label={label}><span aria-hidden="true">{symbol}</span> {Math.abs(Number(change))}%</span>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Something went wrong | Trending Topic</title>
+    <style>
+      :root{font-family:Geist,Inter,Arial,sans-serif;color:#171717;background:#fafafa;font-synthesis:none;text-rendering:optimizeLegibility}
+      *{box-sizing:border-box}
+      body{margin:0;min-width:320px;min-height:100vh;display:flex;flex-direction:column}
+      header{height:72px;border-bottom:1px solid #ebebeb;display:flex;align-items:center;padding:0 clamp(22px,5vw,76px)}
+      .brand{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-.65px;text-decoration:none;color:inherit}
+      .brand-light{font-weight:400;color:#777}
+      main{width:min(100%,1440px);min-height:65vh;margin:auto;padding:70px clamp(22px,5vw,76px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+      .code{font:11px ui-monospace,monospace;letter-spacing:.04em;color:#777}
+      h1{font-size:clamp(54px,9vw,108px);line-height:.9;letter-spacing:-.085em;margin:22px 0 18px}
+      p{max-width:440px;font-size:15px;line-height:1.6;color:#666;margin:0 0 25px}
+      a.button{min-height:42px;display:inline-flex;align-items:center;gap:12px;padding:0 16px;border:1px solid #171717;border-radius:100px;background:#171717;color:white;font-size:13px;font-weight:500;text-decoration:none}
+      a.button:hover{background:#303030}
+      footer{border-top:1px solid #ebebeb;padding:25px clamp(22px,5vw,76px);font-size:12px;color:#777}
+      @media(max-width:560px){header{height:64px}main{min-height:58vh;padding-top:48px;padding-bottom:65px}p{font-size:14px}}
+    </style>
+  </head>
+  <body>
+    <header><a class="brand" href="/"><span>trending<span class="brand-light">topic</span></span></a></header>
+    <main>
+      <span class="code">500 · SERVER ERROR</span>
+      <h1>We hit<br />a snag.</h1>
+      <p>Something went wrong while loading this page. Please try again in a moment.</p>
+      <a class="button" href="/">Back to trending topics <span aria-hidden="true">→</span></a>
+    </main>
+    <footer>Trending Topic · Independent view of what’s gaining attention.</footer>
+  </body>
+</html>

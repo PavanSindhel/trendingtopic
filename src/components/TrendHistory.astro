@@ -1,0 +1,9 @@
+---
+import { trendWidth } from '../utils/trendScore';
+const { history } = Astro.props;
+const labels = ['This year','This month','This week','Yesterday','Today'];
+const values = [...history];
+---
+<div class="history-chart" role="img" aria-label={`Trend score history: ${labels.map((label, i) => `${label} ${values[i]}`).join(', ')}`}>
+  {labels.map((label, index) => <div class="history-row"><span>{label}</span><div class="history-track"><i style={`--bar-width:${trendWidth(values[index])};--bar-delay:${index * 70}ms`}></i></div><strong>{values[index]}</strong></div>)}
+</div>

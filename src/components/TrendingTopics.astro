@@ -1,0 +1,8 @@
+---
+import { trendFontSize } from '../utils/trendScore';
+const { topics, limit = 20 } = Astro.props;
+const displayTopics = topics.slice(0, limit);
+---
+<div class="topic-field" aria-label="Trending topics sized by trend score">
+  {displayTopics.map((topic, index) => <a class:list={['topic-word', index < 3 && 'topic-featured']} href={`/topic/${topic.slug}`} style={`--topic-size:${trendFontSize(topic.score)};--topic-order:${index}`}><span class="topic-rank">{String(topic.rank).padStart(2, '0')}</span><span class="topic-name">{topic.name}</span><span class="topic-delta">{topic.change > 0 ? '↑' : topic.change < 0 ? '↓' : '→'} {Math.abs(topic.change)}%</span></a>)}
+</div>

@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TrendIndicator from '../components/TrendIndicator.astro';
+import { trends } from '../data/trends';
+---
+<Layout title="Search trends | Trending Topic" description="Search current trending topics and explore their score and momentum." canonical="https://trendingnews.vercel.app/search">
+ <main id="main" class="search-page shell"><span class="eyebrow">Find the conversation</span><h1>Search trends.</h1><p class="search-intro">Topics, stories and signals — all in one place.</p><form class="search-large" action="/search" method="get" role="search"><label class="sr-only" for="search-query">Search topics</label><input id="search-query" type="search" name="q" placeholder="Try “AI” or “Cricket”" /><button aria-label="Search">↗</button></form>
+   <section class="search-results" aria-live="polite" aria-label="Trending topic results"><div class="topic-section-meta"><span id="search-status">20 topics · sorted by trend score</span><span>Current snapshot</span></div>{trends.map((topic)=><a class="search-result" data-topic-result data-search={`${topic.name} ${topic.category} ${topic.description}`} href={`/topic/${topic.slug}`}><span class="result-rank">#{String(topic.rank).padStart(2,'0')}</span><span class="result-name">{topic.name}<span class="result-category">{topic.category}</span></span><span class="result-metric"><span>{topic.score} / 100</span><TrendIndicator change={topic.change} /></span></a>)}<p class="no-results" data-no-results hidden>No matching topics yet. Try a broader search like “technology” or “business”.</p></section>
+   <script>
+     const searchInput = document.querySelector<HTMLInputElement>('#search-query');
+     const resultRows = [...document.querySelectorAll<HTMLAnchorElement>('[data-topic-result]')];
+     const status = document.querySelector<HTMLElement>('#search-status');
+     const emptyMessage = document.querySelector<HTMLElement>('[data-no-results]');
+     const applySearch = (value: string) => {
+       const query = value.trim().toLocaleLowerCase();
+       let count = 0;
+       for (const row of resultRows) {
+         const matches = !query || row.dataset.search?.toLocaleLowerCase().includes(query);
+         row.hidden = !matches;
+         if (matches) count += 1;
+       }
+       if (status) status.textContent = `${count} ${count === 1 ? 'topic' : 'topics'}${query ? ` for “${value.trim()}”` : ' · sorted by trend score'}`;
+       if (emptyMessage) emptyMessage.hidden = count > 0;
+     };
+     if (searchInput) {
+       const params = new URLSearchParams(window.location.search);
+       searchInput.value = params.get('q') ?? '';
+       applySearch(searchInput.value);
+       searchInput.addEventListener('input', () => applySearch(searchInput.value));
+     }
+   </script>
+ </main>
+</Layout>
